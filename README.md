@@ -15,6 +15,7 @@ Make sure you have Go installed and [httpie](https://github.com/httpie/cli) avai
 ```bash
 git clone https://github.com/DangeL187/PieTea.git
 cd PieTea
+go mod tidy
 go build -o ptea ./cmd/main.go
 ```
 
