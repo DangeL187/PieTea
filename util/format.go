@@ -23,7 +23,7 @@ func FormatHttpBody(body string) (string, error) {
 	formatter := colorjson.NewFormatter()
 	formatter.Indent = 2
 
-	var obj map[string]interface{}
+	var obj interface{}
 	err := json.Unmarshal([]byte(body), &obj)
 	if err != nil {
 		return "", fmt.Errorf("failed to unmarshal JSON: %v", err)

@@ -23,13 +23,13 @@ func main() {
 
 	headers, body, err := core.Send(filepath)
 	if err != nil {
-		_, _ = fmt.Fprintf(os.Stderr, "Failed to send request: %v", err)
+		_, _ = fmt.Fprintf(os.Stderr, "Failed to send request: %v\n", err)
 		os.Exit(1)
 	}
 
 	err = ui.Render(headers, body)
 	if err != nil {
-		_, _ = fmt.Fprintf(os.Stderr, "Failed to render: %v", err)
+		_, _ = fmt.Fprintf(os.Stderr, "Failed to render: %v\n", err)
 		os.Exit(1)
 	}
 }
