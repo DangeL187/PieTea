@@ -55,15 +55,15 @@ func ToArgs(req Request) []string {
 	args := []string{req.Method, req.URL}
 
 	for key, value := range req.Headers {
-		args = append(args, key+":"+value)
+		args = append(args, key+":\""+value+"\"")
 	}
 
 	for key, value := range req.Body {
-		args = append(args, key+"="+value)
+		args = append(args, key+"=\""+value+"\"")
 	}
 
 	for key, value := range req.QueryParams {
-		args = append(args, key+"::"+value)
+		args = append(args, key+"::\""+value+"\"")
 	}
 
 	return args

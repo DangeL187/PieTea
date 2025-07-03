@@ -23,7 +23,10 @@ func main() {
 
 	headers, body, err := core.Send(filepath)
 	if err != nil {
-		_, _ = fmt.Fprintf(os.Stderr, "Failed to send request: %v\n", err)
+		err = ui.RenderError(os.Stderr, "Failed to send request: %v", err)
+		if err != nil {
+			_, _ = fmt.Fprintf(os.Stderr, "Failed to render error: %v\n", err)
+		}
 		os.Exit(1)
 	}
 

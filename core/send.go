@@ -36,7 +36,7 @@ func Send(filepath string) (string, string, error) {
 
 	response, err := util.ExecCommand("http", args...)
 	if err != nil {
-		return "", "", fmt.Errorf("failed to run command: %v", err)
+		return "", "", fmt.Errorf("failed to run command: %s\n%v", response, err)
 	}
 
 	headers, body := util.ParseHttpResponse(response)
