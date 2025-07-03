@@ -1,9 +1,10 @@
 package request
 
 import (
-	"fmt"
 	"gopkg.in/yaml.v3"
 	"os"
+
+	"github.com/DangeL187/erax/pkg/erax"
 )
 
 type Request struct {
@@ -25,16 +26,16 @@ type Request struct {
 // Returns:
 //   - A Request struct populated with the parsed data.
 //   - An error if the file cannot be read or the YAML is invalid.
-func FromYAML(filepath string) (Request, error) {
+func FromYAML(filepath string) (Request, erax.Error) {
 	file, err := os.ReadFile(filepath)
 	if err != nil {
-		return Request{}, fmt.Errorf("error reading file: %v", err)
+		return Request{}, erax.New(err, "Error reading file")
 	}
 
 	var req Request
 	err = yaml.Unmarshal(file, &req)
 	if err != nil {
-		return Request{}, fmt.Errorf("error unmarshaling YAML: %v", err)
+		return Request{}, erax.New(err, "Error unmarshaling YAML")
 	}
 
 	return req, nil

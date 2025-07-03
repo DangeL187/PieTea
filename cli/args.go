@@ -1,8 +1,9 @@
 package cli
 
 import (
-	"errors"
 	"os"
+
+	"github.com/DangeL187/erax/pkg/erax"
 )
 
 // ParseArgs validates and parses the command-line arguments.
@@ -14,9 +15,10 @@ import (
 // Returns:
 //   - A string containing the provided filepath.
 //   - An error if the number of arguments is not equal to 1.
-func ParseArgs() (string, error) {
+func ParseArgs() (string, erax.Error) {
 	if len(os.Args) != 2 {
-		return "", errors.New("usage: ptea <filepath>")
+		return "", erax.NewFromString("Arguments count mismatch", "").
+			WithMeta("user_message", "Usage: ptea <filepath>")
 	}
 
 	return os.Args[1], nil

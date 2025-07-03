@@ -6,6 +6,7 @@ import (
 	"io"
 	"os"
 
+	"github.com/DangeL187/erax/pkg/erax"
 	"github.com/charmbracelet/lipgloss"
 )
 
@@ -16,10 +17,10 @@ import (
 //
 // Returns:
 //   - An error if it fails to determine the terminal size.
-func initOutput() error {
+func initOutput() erax.Error {
 	width, _, err := term.GetSize(int(os.Stdout.Fd()))
 	if err != nil {
-		return fmt.Errorf("failed to get terminal size: %v", err)
+		return erax.New(err, "Failed to get terminal size")
 	}
 
 	outputStyle = outputStyle.Width(width - outputStyle.GetHorizontalBorderSize())
@@ -37,10 +38,10 @@ func initOutput() error {
 // Returns:
 //   - An error if it fails to determine the terminal size.
 //   - Otherwise, returns nil after printing the styled output to stdout.
-func Render(headers, body string) error {
+func Render(headers, body string) erax.Error {
 	err := initOutput()
 	if err != nil {
-		return err
+		return erax.New(err, "Failed to init output")
 	}
 
 	content := headers + "\n\n" + body
@@ -61,7 +62,7 @@ func Render(headers, body string) error {
 // Returns:
 //   - An error if terminal size retrieval or writing to the output fails.
 //   - Otherwise, returns nil after writing the styled error to the writer.
-func RenderError(w io.Writer, format string, a ...any) error {
+func RenderError(w io.Writer, format string, a ...any) erax.Error {
 	err := initOutput()
 	if err != nil {
 		return err
@@ -69,13 +70,13 @@ func RenderError(w io.Writer, format string, a ...any) error {
 
 	content := fmt.Sprintf(format, a...)
 
-	_, err = fmt.Fprint(w, outputStyle.Render(errorStyle.Render(content)))
-	return err
+	_, err2 := fmt.Fprint(w, outputStyle.Render(errorStyle.Render(content)))
+	return erax.New(err2, "Failed to print error")
 }
 
 var (
 	errorStyle = lipgloss.NewStyle().
-		Foreground(lipgloss.Color("#f38ba8"))
+			Foreground(lipgloss.Color("#f38ba8"))
 	outputStyle = lipgloss.NewStyle().
-		Border(lipgloss.RoundedBorder())
+			Border(lipgloss.RoundedBorder())
 )

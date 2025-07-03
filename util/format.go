@@ -2,8 +2,8 @@ package util
 
 import (
 	"encoding/json"
-	"fmt"
 
+	"github.com/DangeL187/erax/pkg/erax"
 	"github.com/TylerBrock/colorjson"
 )
 
@@ -19,19 +19,19 @@ import (
 // Returns:
 //   - a syntax-highlighted, indented JSON string suitable for terminal output.
 //   - an error if the input is not valid JSON or cannot be formatted.
-func FormatHttpBody(body string) (string, error) {
+func FormatHttpBody(body string) (string, erax.Error) {
 	formatter := colorjson.NewFormatter()
 	formatter.Indent = 2
 
 	var obj interface{}
 	err := json.Unmarshal([]byte(body), &obj)
 	if err != nil {
-		return "", fmt.Errorf("failed to unmarshal JSON: %v", err)
+		return "", erax.New(err, "Failed to unmarshal JSON")
 	}
 
 	formattedBody, err := formatter.Marshal(obj)
 	if err != nil {
-		return "", fmt.Errorf("failed to print JSON: %v", err)
+		return "", erax.New(err, "Failed to print JSON")
 	}
 
 	return string(formattedBody), nil
