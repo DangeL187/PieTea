@@ -5,8 +5,11 @@ import (
 
 	"github.com/DangeL187/erax/pkg/erax"
 
-	"PieTea/core/request"
-	"PieTea/util"
+	"PieTea/internal/app/request"
+	"PieTea/internal/app/response"
+	"PieTea/internal/infra/logger"
+	"PieTea/internal/shared/exec"
+	"PieTea/internal/shared/formatter"
 )
 
 // Send reads an HTTP request definition from a YAML file, executes the request
@@ -37,17 +40,20 @@ func Send(filepath string) (string, string, erax.Error) {
 	reqArgs := request.ToArgs(req)
 	args := append([]string{"--ignore-stdin", "--print=hb"}, reqArgs...)
 
-	response, err := util.ExecCommand("http", args...)
+	output, err := exec.Command("http", args...)
 	if err != nil {
 		return "", "", erax.New(err, "Failed to execute command")
 	}
 
-	headers, body := util.ParseHttpResponse(response)
+	headers, body := response.Parse(output)
 
-	formattedBody, err := util.FormatHttpBody(body)
+	formattedBody, err := formatter.FormatJson(body)
 	if err != nil {
-		return "", "", erax.New(err, "Failed to format body").
+		wrapped := erax.New(err, "Failed to format body").
 			WithMeta("user_message", "Failed to format response body")
+		logger.Logger.Warn("\n" + erax.Trace(wrapped))
+
+		return headers, body, nil
 	}
 
 	return headers, formattedBody, nil

@@ -1,10 +1,12 @@
 module PieTea
 
-go 1.24
+go 1.24.3
 
 require (
+	github.com/DangeL187/erax v0.0.0-20250703213248-b50f66681180
 	github.com/TylerBrock/colorjson v0.0.0-20200706003622-8a50f05110d2
 	github.com/charmbracelet/lipgloss v1.1.0
+	github.com/charmbracelet/log v0.4.2
 	golang.org/x/term v0.32.0
 	gopkg.in/yaml.v3 v3.0.1
 )
@@ -16,6 +18,7 @@ require (
 	github.com/charmbracelet/x/cellbuf v0.0.13-0.20250311204145-2c3ea96c31dd // indirect
 	github.com/charmbracelet/x/term v0.2.1 // indirect
 	github.com/fatih/color v1.18.0 // indirect
+	github.com/go-logfmt/logfmt v0.6.0 // indirect
 	github.com/hokaccha/go-prettyjson v0.0.0-20211117102719-0474bc63780f // indirect
 	github.com/lucasb-eyer/go-colorful v1.2.0 // indirect
 	github.com/mattn/go-colorable v0.1.13 // indirect

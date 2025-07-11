@@ -1,4 +1,4 @@
-package util
+package exec
 
 import (
 	"os/exec"
@@ -7,7 +7,7 @@ import (
 	"github.com/DangeL187/erax/pkg/erax"
 )
 
-// ExecCommand runs an external command specified by cmdName and its arguments args,
+// Command runs an external command specified by cmdName and its arguments args,
 // then returns the combined standard output and standard error as a string.
 //
 // Parameters:
@@ -20,7 +20,7 @@ import (
 //
 // Notes:
 //   - If the command fails (non-zero exit status), the output will be empty and message will be returned along with the error.
-func ExecCommand(cmdName string, args ...string) (string, erax.Error) {
+func Command(cmdName string, args ...string) (string, erax.Error) {
 	cmd := exec.Command(cmdName, args...)
 	output, err := cmd.CombinedOutput()
 	if err != nil {

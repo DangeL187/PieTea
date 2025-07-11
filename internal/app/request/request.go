@@ -15,27 +15,41 @@ type Request struct {
 	QueryParams map[string]string `yaml:"QueryParams"`
 }
 
-// FromYAML reads a YAML file from the given filepath and unmarshals it into a Request struct.
+// FromYAML reads a YAML file from the given filepath, substitutes ${VAR} placeholders
+// with values from environment variables, and unmarshalls the result into a Request struct.
 //
-// For more details on how to write YAML, see the "usage" section in the README:
-// https://github.com/DangeL187/PieTea?tab=readme-ov-file#usage
+// The YAML file may include placeholders in the form ${VAR}, which will be replaced
+// using the corresponding environment variables. If a variable is not set, the placeholder
+// will remain unchanged.
+//
+// For more details on how to write YAML with variable placeholders, see the "usage" section
+// in the README: https://github.com/DangeL187/PieTea?tab=readme-ov-file#usage
 //
 // Parameters:
 //   - filepath: the path to the YAML file.
 //
 // Returns:
-//   - A Request struct populated with the parsed data.
-//   - An error if the file cannot be read or the YAML is invalid.
+//   - A Request struct populated with the parsed and processed YAML data.
+//   - An erax.Error if the file cannot be read or the YAML is invalid.
 func FromYAML(filepath string) (Request, erax.Error) {
-	file, err := os.ReadFile(filepath)
+	content, err := os.ReadFile(filepath)
 	if err != nil {
 		return Request{}, erax.New(err, "Error reading file")
 	}
 
+	processed := os.Expand(string(content), func(key string) string {
+		value := os.Getenv(key)
+		if value == "" {
+			return "${" + key + "}"
+		}
+
+		return value
+	})
+
 	var req Request
-	err = yaml.Unmarshal(file, &req)
+	err = yaml.Unmarshal([]byte(processed), &req)
 	if err != nil {
-		return Request{}, erax.New(err, "Error unmarshaling YAML")
+		return Request{}, erax.New(err, "Error unmarshalling YAML")
 	}
 
 	return req, nil
