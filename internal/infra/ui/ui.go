@@ -34,21 +34,16 @@ func initOutput() erax.Error {
 // Parameters:
 //   - headers: the HTTP response headers as a string.
 //   - body: the formatted HTTP response body as a string.
-//
-// Returns:
-//   - An error if it fails to determine the terminal size.
-//   - Otherwise, returns nil after printing the styled output to stdout.
-func Render(headers, body string) erax.Error {
-	err := initOutput()
-	if err != nil {
-		return erax.New(err, "Failed to init output")
-	}
-
+func Render(headers, body string) {
 	content := headers + "\n\n" + body
 
-	fmt.Println(outputStyle.Render(content))
+	err := initOutput()
+	if err != nil {
+		fmt.Println(content)
+		return
+	}
 
-	return nil
+	fmt.Println(outputStyle.Render(content))
 }
 
 // RenderError outputs a formatted error message to the given writer,

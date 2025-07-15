@@ -25,9 +25,7 @@ func main() {
 		handleSendError(err)
 	}
 
-	if err := ui.Render(headers, body); err != nil {
-		handleRenderError(err)
-	}
+	ui.Render(headers, body)
 }
 
 // --- Error Handlers ---
