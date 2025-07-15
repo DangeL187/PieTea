@@ -2,6 +2,7 @@ package core
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/DangeL187/erax/pkg/erax"
 
@@ -30,19 +31,24 @@ import (
 //   - headers: the raw HTTP response headers as a string.
 //   - formattedBody: the pretty-printed, colorized HTTP response body.
 //   - error: if any step fails (parsing, execution, formatting), an error is returned.
-func Send(filepath string) (string, string, erax.Error) {
+func Send(filepath string, showCmd bool) (string, string, string, erax.Error) {
 	req, err := request.FromYAML(filepath)
 	if err != nil {
-		return "", "", erax.New(err, "Failed to create request from YAML").
+		return "", "", "", erax.New(err, "Failed to create request from YAML").
 			WithMeta("user_message", fmt.Sprintf("Failed to parse YAML:\n\n%v", err.Error()))
 	}
 
 	reqArgs := request.ToArgs(req)
 	args := append([]string{"--ignore-stdin", "--print=hb"}, reqArgs...)
 
+	var command string
+	if showCmd {
+		command = "http " + strings.Join(args, " ")
+	}
+
 	output, err := exec.Command("http", args...)
 	if err != nil {
-		return "", "", erax.New(err, "Failed to execute command")
+		return "", "", "", erax.New(err, "Failed to execute command")
 	}
 
 	headers, body := response.Parse(output)
@@ -52,9 +58,7 @@ func Send(filepath string) (string, string, erax.Error) {
 		wrapped := erax.New(err, "Failed to format body").
 			WithMeta("user_message", "Failed to format response body")
 		logger.Logger.Warn("\n" + erax.Trace(wrapped))
-
-		return headers, body, nil
 	}
 
-	return headers, formattedBody, nil
+	return headers, formattedBody, command, nil
 }

@@ -1,7 +1,7 @@
 package cli
 
 import (
-	"os"
+	"flag"
 
 	"github.com/DangeL187/erax/pkg/erax"
 )
@@ -15,11 +15,16 @@ import (
 // Returns:
 //   - A string containing the provided filepath.
 //   - An error if the number of arguments is not equal to 1.
-func ParseArgs() (string, erax.Error) {
-	if len(os.Args) != 2 {
-		return "", erax.NewFromString("Arguments count mismatch", "").
+func ParseArgs() (string, bool, erax.Error) {
+	showCmd := flag.Bool("show-cmd", false, "Показать сгенерированную команду перед выполнением")
+
+	flag.Parse()
+
+	args := flag.Args()
+	if len(args) < 1 {
+		return "", false, erax.NewFromString("Arguments count mismatch", "").
 			WithMeta("user_message", "Usage: ptea <filepath>")
 	}
-
-	return os.Args[1], nil
+	filepath := args[0]
+	return filepath, *showCmd, nil
 }

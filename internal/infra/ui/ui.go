@@ -34,15 +34,26 @@ func initOutput() erax.Error {
 // Parameters:
 //   - headers: the HTTP response headers as a string.
 //   - body: the formatted HTTP response body as a string.
-func Render(headers, body string) {
+func Render(headers, body, command string) {
+	commandContent := ""
+	if command != "" {
+		commandContent = "Command: " + command
+	}
+
 	content := headers + "\n\n" + body
 
 	err := initOutput()
 	if err != nil {
+		if commandContent != "" {
+			fmt.Println(commandContent)
+		}
+
 		fmt.Println(content)
+
 		return
 	}
 
+	fmt.Println(outputStyle.Render(commandContent))
 	fmt.Println(outputStyle.Render(content))
 }
 
