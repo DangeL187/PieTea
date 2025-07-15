@@ -15,17 +15,17 @@ import (
 func main() {
 	//logger.Logger.SetOutput(io.Discard) // TODO: enable with --debug flag (--log-file <filepath>)
 
-	filepath, err := cli.ParseArgs()
+	filepath, showCmd, err := cli.ParseArgs()
 	if err != nil {
 		handleArgError(err)
 	}
 
-	headers, body, err := core.Send(filepath)
+	headers, body, command, err := core.Send(filepath, showCmd)
 	if err != nil {
 		handleSendError(err)
 	}
 
-	ui.Render(headers, body)
+	ui.Render(headers, body, command)
 }
 
 // --- Error Handlers ---
