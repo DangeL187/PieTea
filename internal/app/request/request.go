@@ -3,10 +3,21 @@ package request
 import (
 	"gopkg.in/yaml.v3"
 	"os"
+	"strings"
 
 	"github.com/DangeL187/erax/pkg/erax"
+
+	"PieTea/internal/shared/config"
 )
 
+// Request represents an HTTP request definition.
+//
+// Fields:
+//   - Method: HTTP method (e.g., GET, POST).
+//   - URL: request URL.
+//   - Headers: HTTP headers as key-value pairs.
+//   - Body: request body as key-value pairs.
+//   - QueryParams: URL query parameters as key-value pairs.
 type Request struct {
 	Method      string            `yaml:"Method"`
 	URL         string            `yaml:"URL"`
@@ -16,35 +27,45 @@ type Request struct {
 }
 
 // FromYAML reads a YAML file from the given filepath, substitutes ${VAR} placeholders
-// with values from environment variables, and unmarshalls the result into a Request struct.
+// with environment variable values, and unmarshalls the result into a Request.
 //
-// The YAML file may include placeholders in the form ${VAR}, which will be replaced
-// using the corresponding environment variables. If a variable is not set, the placeholder
-// will remain unchanged.
+// Placeholders in the form ${VAR} are replaced by the value of the corresponding
+// environment variable. If the variable is not set, the placeholder remains unchanged.
 //
-// For more details on how to write YAML with variable placeholders, see the "usage" section
-// in the README: https://github.com/DangeL187/PieTea?tab=readme-ov-file#usage
+// For usage details, see the README: https://github.com/DangeL187/PieTea?tab=readme-ov-file#usage
 //
 // Parameters:
-//   - filepath: the path to the YAML file.
+//   - cfg: configuration containing the YAML filepath.
 //
 // Returns:
-//   - A Request struct populated with the parsed and processed YAML data.
-//   - An erax.Error if the file cannot be read or the YAML is invalid.
-func FromYAML(filepath string) (Request, erax.Error) {
-	content, err := os.ReadFile(filepath)
+//   - Request populated from the processed YAML.
+//   - erax.Error if reading or parsing fails.
+func FromYAML(cfg config.Config) (Request, erax.Error) {
+	content, err := os.ReadFile(cfg.Filepath)
 	if err != nil {
 		return Request{}, erax.New(err, "Error reading file")
 	}
 
+	var missingVars []string
+
 	processed := os.Expand(string(content), func(key string) string {
 		value := os.Getenv(key)
 		if value == "" {
+			if !cfg.IgnoreMissingVars {
+				missingVars = append(missingVars, key)
+			}
 			return "${" + key + "}"
 		}
 
 		return value
 	})
+
+	if len(missingVars) > 0 {
+		return Request{}, erax.NewFromString(
+			"Environment variables not set: "+strings.Join(missingVars, ", "),
+			"",
+		)
+	}
 
 	var req Request
 	err = yaml.Unmarshal([]byte(processed), &req)

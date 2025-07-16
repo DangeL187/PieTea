@@ -1,6 +1,7 @@
 package ui
 
 import (
+	"PieTea/internal/app/response"
 	"fmt"
 	"golang.org/x/term"
 	"io"
@@ -34,13 +35,13 @@ func initOutput() erax.Error {
 // Parameters:
 //   - headers: the HTTP response headers as a string.
 //   - body: the formatted HTTP response body as a string.
-func Render(headers, body, command string) {
+func Render(resp response.Response) {
 	commandContent := ""
-	if command != "" {
-		commandContent = "Command: " + command
+	if resp.Command != "" {
+		commandContent = "Command: " + resp.Command
 	}
 
-	content := headers + "\n\n" + body
+	content := resp.Headers + "\n\n" + resp.Body
 
 	err := initOutput()
 	if err != nil {
@@ -53,7 +54,9 @@ func Render(headers, body, command string) {
 		return
 	}
 
-	fmt.Println(outputStyle.Render(commandContent))
+	if commandContent != "" {
+		fmt.Println(outputStyle.Render(commandContent))
+	}
 	fmt.Println(outputStyle.Render(content))
 }
 
@@ -71,13 +74,17 @@ func Render(headers, body, command string) {
 func RenderError(w io.Writer, format string, a ...any) erax.Error {
 	err := initOutput()
 	if err != nil {
-		return err
+		return erax.New(err, "Failed to initialize output")
 	}
 
 	content := fmt.Sprintf(format, a...)
 
 	_, err2 := fmt.Fprint(w, outputStyle.Render(errorStyle.Render(content)))
-	return erax.New(err2, "Failed to print error")
+	if err2 != nil {
+		return erax.New(err2, "Failed to print rendered error")
+	}
+
+	return nil
 }
 
 var (

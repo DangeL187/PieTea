@@ -1,6 +1,7 @@
 package core
 
 import (
+	"PieTea/internal/shared/config"
 	"fmt"
 	"strings"
 
@@ -13,28 +14,17 @@ import (
 	"PieTea/internal/shared/formatter"
 )
 
-// Send reads an HTTP request definition from a YAML file, executes the request
-// using the `httpie` CLI tool, and returns the response headers and formatted body.
+// Send loads an HTTP request from a YAML file, runs it via `httpie` CLI, and returns the response.
 //
-// The function performs the following steps:
-//  1. Parses the YAML file at `filepath` into a Request object.
-//  2. Converts the Request into CLI arguments for the `http` command,
-//     adding flags to ignore stdin and print headers and body.
-//  3. Executes the HTTP request via the external command.
-//  4. Parses the raw HTTP response into separate headers and body strings.
-//  5. Formats the response body with syntax highlighting.
-//
-// Parameters:
-//   - filepath: path to the YAML file containing the HTTP request definition.
+// It parses the YAML into a request, builds CLI args, runs the command, and formats the response.
 //
 // Returns:
-//   - headers: the raw HTTP response headers as a string.
-//   - formattedBody: the pretty-printed, colorized HTTP response body.
-//   - error: if any step fails (parsing, execution, formatting), an error is returned.
-func Send(filepath string, showCmd bool) (string, string, string, erax.Error) {
-	req, err := request.FromYAML(filepath)
+//   - response.Response with headers, formatted body, and optional executed command string.
+//   - erax.Error if parsing, execution, or formatting fails.
+func Send(cfg config.Config) (response.Response, erax.Error) {
+	req, err := request.FromYAML(cfg)
 	if err != nil {
-		return "", "", "", erax.New(err, "Failed to create request from YAML").
+		return response.Response{}, erax.New(err, "Failed to create request from YAML").
 			WithMeta("user_message", fmt.Sprintf("Failed to parse YAML:\n\n%v", err.Error()))
 	}
 
@@ -42,23 +32,30 @@ func Send(filepath string, showCmd bool) (string, string, string, erax.Error) {
 	args := append([]string{"--ignore-stdin", "--print=hb"}, reqArgs...)
 
 	var command string
-	if showCmd {
+	if cfg.ShowCmd {
 		command = "http " + strings.Join(args, " ")
 	}
 
-	output, err := exec.Command("http", args...)
-	if err != nil {
-		return "", "", "", erax.New(err, "Failed to execute command")
+	output, isErr := exec.Command("http", args...)
+	if isErr {
+		return response.Response{}, erax.New(err, "Failed to execute command").
+			WithMeta("user_message", output)
 	}
 
 	headers, body := response.Parse(output)
 
-	formattedBody, err := formatter.FormatJson(body)
+	formattedBody, err := formatter.FormatJSON(body)
 	if err != nil {
 		wrapped := erax.New(err, "Failed to format body").
 			WithMeta("user_message", "Failed to format response body")
 		logger.Logger.Warn("\n" + erax.Trace(wrapped))
 	}
 
-	return headers, formattedBody, command, nil
+	resp := response.Response{
+		Body:    formattedBody,
+		Command: command,
+		Headers: headers,
+	}
+
+	return resp, nil
 }

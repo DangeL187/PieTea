@@ -2,6 +2,18 @@ package response
 
 import "strings"
 
+// Response represents the result of an executed HTTP request.
+//
+// Fields:
+//   - Body: formatted HTTP response body.
+//   - Command: full CLI command that was executed (if shown).
+//   - Headers: raw HTTP response headers.
+type Response struct {
+	Body    string
+	Command string
+	Headers string
+}
+
 // Parse splits a raw HTTP response string into headers and body parts.
 //
 // It first attempts to split the response by the standard HTTP header-body separator "\r\n\r\n".

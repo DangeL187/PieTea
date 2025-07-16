@@ -2,29 +2,47 @@ package cli
 
 import (
 	"flag"
+	"fmt"
 
 	"github.com/DangeL187/erax/pkg/erax"
+
+	"PieTea/internal/shared/config"
 )
 
-// ParseArgs validates and parses the command-line arguments.
-//
-// It expects exactly one argument: the path to a file.
-// If the number of arguments is incorrect, it returns an error
-// indicating the correct usage.
+// printUsage displays CLI usage information and available flags.
+func printUsage() {
+	_, _ = fmt.Fprintf(flag.CommandLine.Output(), "Usage: ptea [OPTIONS] [FILE]\nOptions:\n")
+	flag.PrintDefaults()
+}
+
+// ParseArgs parses command-line flags and arguments.
 //
 // Returns:
-//   - A string containing the provided filepath.
-//   - An error if the number of arguments is not equal to 1.
-func ParseArgs() (string, bool, erax.Error) {
-	showCmd := flag.Bool("show-cmd", false, "Показать сгенерированную команду перед выполнением")
+//   - config.Config: populated configuration struct based on flags and arguments.
+//   - erax.Error: returned if the required positional argument (filepath) is missing.
+func ParseArgs() (config.Config, erax.Error) {
+	ignoreMissingVars := flag.Bool("ignore-missing-vars", false, "Ignore missing or unset environment variables in the YAML file")
+	isDebug := flag.Bool("debug", false, "Debug mode")
+	logFile := flag.String("log-file", "", "Write logs to specified file instead of stdout")
+	showCmd := flag.Bool("show-cmd", false, "Show generated command before executing")
+
+	flag.Usage = printUsage
 
 	flag.Parse()
 
 	args := flag.Args()
 	if len(args) < 1 {
-		return "", false, erax.NewFromString("Arguments count mismatch", "").
-			WithMeta("user_message", "Usage: ptea <filepath>")
+		printUsage()
+		return config.Config{}, erax.NewFromString("Arguments count mismatch", "")
 	}
-	filepath := args[0]
-	return filepath, *showCmd, nil
+
+	cfg := config.Config{
+		Filepath:          args[0],
+		IgnoreMissingVars: *ignoreMissingVars,
+		IsDebug:           *isDebug,
+		LogFile:           *logFile,
+		ShowCmd:           *showCmd,
+	}
+
+	return cfg, nil
 }

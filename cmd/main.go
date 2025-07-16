@@ -13,33 +13,31 @@ import (
 )
 
 func main() {
-	//logger.Logger.SetOutput(io.Discard) // TODO: enable with --debug flag (--log-file <filepath>)
-
-	filepath, showCmd, err := cli.ParseArgs()
+	cfg, err := cli.ParseArgs()
 	if err != nil {
-		handleArgError(err)
+		os.Exit(1)
 	}
 
-	headers, body, command, err := core.Send(filepath, showCmd)
+	err = logger.Init(cfg)
+	if err != nil {
+		handleLoggerError(err)
+	}
+
+	resp, err := core.Send(cfg)
 	if err != nil {
 		handleSendError(err)
 	}
 
-	ui.Render(headers, body, command)
+	ui.Render(resp)
 }
 
 // --- Error Handlers ---
 
-func handleArgError(err erax.Error) {
-	logger.Logger.Error("\n" + erax.Trace(err))
+func handleLoggerError(err erax.Error) {
+	wrapped := erax.New(err, "Failed to init logger")
+	logger.Logger.Error("\n" + erax.Trace(wrapped))
 
-	if msg, err := err.Meta("user_message"); err == nil {
-		fmt.Println(msg)
-	} else {
-		fmt.Println("Invalid arguments")
-	}
-
-	os.Exit(0)
+	os.Exit(2)
 }
 
 func handleSendError(err erax.Error) {
@@ -58,15 +56,5 @@ func handleSendError(err erax.Error) {
 		_, _ = fmt.Fprintf(os.Stderr, "%v\n", msg)
 	}
 
-	os.Exit(0)
-}
-
-func handleRenderError(err erax.Error) {
-	wrapped := erax.New(err, "Failed to render")
-	logger.Logger.Error("\n" + erax.Trace(wrapped))
-
-	// TODO: Fallback to plain output (--no-borders, --no-colors), depends on https://github.com/DangeL187/PieTea/issues/3
-
-	_, _ = fmt.Fprintf(os.Stderr, "%s\n", wrapped.Msg())
 	os.Exit(0)
 }
