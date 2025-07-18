@@ -2,6 +2,7 @@ package ui
 
 import (
 	"PieTea/internal/app/response"
+	"PieTea/internal/shared/config"
 	"fmt"
 	"golang.org/x/term"
 	"io"
@@ -35,7 +36,7 @@ func initOutput() erax.Error {
 // Parameters:
 //   - headers: the HTTP response headers as a string.
 //   - body: the formatted HTTP response body as a string.
-func Render(resp response.Response) {
+func Render(cfg config.Config, resp response.Response) {
 	commandContent := ""
 	if resp.Command != "" {
 		commandContent = "Command: " + resp.Command
@@ -44,7 +45,7 @@ func Render(resp response.Response) {
 	content := resp.Headers + "\n\n" + resp.Body
 
 	err := initOutput()
-	if err != nil {
+	if err != nil || cfg.IsPlain {
 		if commandContent != "" {
 			fmt.Println(commandContent)
 		}
@@ -57,6 +58,7 @@ func Render(resp response.Response) {
 	if commandContent != "" {
 		fmt.Println(outputStyle.Render(commandContent))
 	}
+
 	fmt.Println(outputStyle.Render(content))
 }
 
