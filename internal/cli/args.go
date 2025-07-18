@@ -1,12 +1,10 @@
 package cli
 
 import (
+	"PieTea/internal/shared/config"
 	"flag"
 	"fmt"
-
 	"github.com/DangeL187/erax/pkg/erax"
-
-	"PieTea/internal/shared/config"
 )
 
 // printUsage displays CLI usage information and available flags.
@@ -25,6 +23,9 @@ func ParseArgs() (config.Config, erax.Error) {
 	isDebug := flag.Bool("debug", false, "Debug mode")
 	logFile := flag.String("log-file", "", "Write logs to specified file instead of stdout")
 	showCmd := flag.Bool("show-cmd", false, "Show generated command before executing")
+	var isPlain bool
+	flag.BoolVar(&isPlain, "p", false, "Only show plain style, no decorations (short)")
+	flag.BoolVar(&isPlain, "plain", false, "Only show plain style, no decorations (long)")
 
 	flag.Usage = printUsage
 
@@ -40,6 +41,7 @@ func ParseArgs() (config.Config, erax.Error) {
 		Filepath:          args[0],
 		IgnoreMissingVars: *ignoreMissingVars,
 		IsDebug:           *isDebug,
+		IsPlain:           isPlain,
 		LogFile:           *logFile,
 		ShowCmd:           *showCmd,
 	}

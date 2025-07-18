@@ -28,7 +28,7 @@ func main() {
 		handleSendError(err)
 	}
 
-	ui.Render(resp)
+	ui.Render(cfg, resp)
 }
 
 // --- Error Handlers ---
