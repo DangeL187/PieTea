@@ -1,8 +1,6 @@
 package ui
 
 import (
-	"PieTea/internal/app/response"
-	"PieTea/internal/shared/config"
 	"fmt"
 	"golang.org/x/term"
 	"io"
@@ -10,6 +8,9 @@ import (
 
 	"github.com/DangeL187/erax/pkg/erax"
 	"github.com/charmbracelet/lipgloss"
+
+	"PieTea/internal/app/response"
+	"PieTea/internal/shared/config"
 )
 
 // Initializes output style.

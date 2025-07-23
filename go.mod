@@ -3,7 +3,7 @@ module PieTea
 go 1.24.3
 
 require (
-	github.com/DangeL187/erax v0.0.0-20250716224327-22fab5a8f7ad
+	github.com/DangeL187/erax v0.0.0-20250723170650-dcf36835d9fc
 	github.com/TylerBrock/colorjson v0.0.0-20200706003622-8a50f05110d2
 	github.com/charmbracelet/lipgloss v1.1.0
 	github.com/charmbracelet/log v0.4.2

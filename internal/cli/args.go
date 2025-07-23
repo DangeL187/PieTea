@@ -1,10 +1,12 @@
 package cli
 
 import (
-	"PieTea/internal/shared/config"
 	"flag"
 	"fmt"
+
 	"github.com/DangeL187/erax/pkg/erax"
+
+	"PieTea/internal/shared/config"
 )
 
 // printUsage displays CLI usage information and available flags.

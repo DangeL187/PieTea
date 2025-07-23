@@ -1,7 +1,6 @@
 package core
 
 import (
-	"PieTea/internal/shared/config"
 	"fmt"
 	"strings"
 
@@ -10,6 +9,7 @@ import (
 	"PieTea/internal/app/request"
 	"PieTea/internal/app/response"
 	"PieTea/internal/infra/logger"
+	"PieTea/internal/shared/config"
 	"PieTea/internal/shared/exec"
 	"PieTea/internal/shared/formatter"
 )
@@ -38,7 +38,7 @@ func Send(cfg config.Config) (response.Response, erax.Error) {
 
 	output, isErr := exec.Command("http", args...)
 	if isErr {
-		return response.Response{}, erax.New(err, "Failed to execute command").
+		return response.Response{}, erax.NewFromString("Failed to execute command", "").
 			WithMeta("user_message", output)
 	}
 
