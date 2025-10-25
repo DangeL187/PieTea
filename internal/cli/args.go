@@ -4,7 +4,7 @@ import (
 	"flag"
 	"fmt"
 
-	"github.com/DangeL187/erax/pkg/erax"
+	"github.com/DangeL187/erax"
 
 	"PieTea/internal/shared/config"
 )
@@ -19,8 +19,8 @@ func printUsage() {
 //
 // Returns:
 //   - config.Config: populated configuration struct based on flags and arguments.
-//   - erax.Error: returned if the required positional argument (filepath) is missing.
-func ParseArgs() (config.Config, erax.Error) {
+//   - error: returned if the required positional argument (filepath) is missing.
+func ParseArgs() (config.Config, error) {
 	ignoreMissingVars := flag.Bool("ignore-missing-vars", false, "Ignore missing or unset environment variables in the YAML file")
 	isDebug := flag.Bool("debug", false, "Debug mode")
 	logFile := flag.String("log-file", "", "Write logs to specified file instead of stdout")

@@ -5,7 +5,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/DangeL187/erax/pkg/erax"
+	"github.com/DangeL187/erax"
 
 	"PieTea/internal/shared/config"
 )
@@ -39,8 +39,8 @@ type Request struct {
 //
 // Returns:
 //   - Request populated from the processed YAML.
-//   - erax.Error if reading or parsing fails.
-func FromYAML(cfg config.Config) (Request, erax.Error) {
+//   - error if reading or parsing fails.
+func FromYAML(cfg config.Config) (Request, error) {
 	content, err := os.ReadFile(cfg.Filepath)
 	if err != nil {
 		return Request{}, erax.New(err, "Error reading file")

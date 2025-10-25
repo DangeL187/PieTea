@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/DangeL187/erax/pkg/erax"
+	"github.com/DangeL187/erax"
 
 	"PieTea/internal/app/core"
 	"PieTea/internal/cli"
@@ -33,14 +33,14 @@ func main() {
 
 // --- Error Handlers ---
 
-func handleLoggerError(err erax.Error) {
+func handleLoggerError(err error) {
 	wrapped := erax.New(err, "Failed to init logger")
 	logger.Logger.Error("\n" + erax.Trace(wrapped))
 
 	os.Exit(2)
 }
 
-func handleSendError(err erax.Error) {
+func handleSendError(err error) {
 	wrapped := erax.New(err, "Failed to send request")
 	logger.Logger.Error("\n" + erax.Trace(wrapped))
 

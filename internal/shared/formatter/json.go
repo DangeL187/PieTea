@@ -3,7 +3,7 @@ package formatter
 import (
 	"encoding/json"
 
-	"github.com/DangeL187/erax/pkg/erax"
+	"github.com/DangeL187/erax"
 	"github.com/TylerBrock/colorjson"
 )
 
@@ -19,7 +19,7 @@ import (
 // Returns:
 //   - a syntax-highlighted, indented JSON string suitable for terminal output.
 //   - an error if the input is not valid JSON or cannot be formatted.
-func FormatJSON(rawJSON string) (string, erax.Error) {
+func FormatJSON(rawJSON string) (string, error) {
 	formatter := colorjson.NewFormatter()
 	formatter.Indent = 2
 

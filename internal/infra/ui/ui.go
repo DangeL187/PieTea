@@ -6,7 +6,7 @@ import (
 	"io"
 	"os"
 
-	"github.com/DangeL187/erax/pkg/erax"
+	"github.com/DangeL187/erax"
 	"github.com/charmbracelet/lipgloss"
 
 	"PieTea/internal/app/response"
@@ -20,7 +20,7 @@ import (
 //
 // Returns:
 //   - An error if it fails to determine the terminal size.
-func initOutput() erax.Error {
+func initOutput() error {
 	width, _, err := term.GetSize(int(os.Stdout.Fd()))
 	if err != nil {
 		return erax.New(err, "Failed to get terminal size")
@@ -74,7 +74,7 @@ func Render(cfg config.Config, resp response.Response) {
 // Returns:
 //   - An error if terminal size retrieval or writing to the output fails.
 //   - Otherwise, returns nil after writing the styled error to the writer.
-func RenderError(w io.Writer, format string, a ...any) erax.Error {
+func RenderError(w io.Writer, format string, a ...any) error {
 	err := initOutput()
 	if err != nil {
 		return erax.New(err, "Failed to initialize output")

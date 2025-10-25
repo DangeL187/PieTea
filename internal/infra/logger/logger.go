@@ -5,7 +5,7 @@ import (
 	"os"
 	"time"
 
-	"github.com/DangeL187/erax/pkg/erax"
+	"github.com/DangeL187/erax"
 	"github.com/charmbracelet/log"
 
 	"PieTea/internal/shared/config"
@@ -24,7 +24,7 @@ var Logger = log.NewWithOptions(os.Stdout, log.Options{
 // If a log file path is provided, logs are written to that file.
 //
 // Returns an error if the log file cannot be opened.
-func Init(cfg config.Config) erax.Error {
+func Init(cfg config.Config) error {
 	if !cfg.IsDebug {
 		Logger.SetOutput(io.Discard)
 	}

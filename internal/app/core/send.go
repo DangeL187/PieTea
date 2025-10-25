@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/DangeL187/erax/pkg/erax"
+	"github.com/DangeL187/erax"
 
 	"PieTea/internal/app/request"
 	"PieTea/internal/app/response"
@@ -20,8 +20,8 @@ import (
 //
 // Returns:
 //   - response.Response with headers, formatted body, and optional executed command string.
-//   - erax.Error if parsing, execution, or formatting fails.
-func Send(cfg config.Config) (response.Response, erax.Error) {
+//   - error if parsing, execution, or formatting fails.
+func Send(cfg config.Config) (response.Response, error) {
 	req, err := request.FromYAML(cfg)
 	if err != nil {
 		return response.Response{}, erax.New(err, "Failed to create request from YAML").
